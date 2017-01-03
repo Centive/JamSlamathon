@@ -66,6 +66,7 @@ public class Enemy1 : MonoBehaviour
         //Find player
         FindPlayer();
 
+        myRb.velocity = new Vector2(0, myRb.velocity.y);
         //Idle time
         curIdleTime -= Time.deltaTime;
         if (curIdleTime < 0f)
@@ -83,7 +84,6 @@ public class Enemy1 : MonoBehaviour
             if(curMoveTime < 0f)
             {
                 curState = Estate.Eidle;
-                myRb.velocity = new Vector2(0, myRb.velocity.y);
 
                 //moves the ai the other way next time
                 isFacingLeft = false;
@@ -94,8 +94,6 @@ public class Enemy1 : MonoBehaviour
                 //move the ai
                 myRb.velocity = new Vector2(-curSpeed, myRb.velocity.y);
             }
-
-
         }
 
         if(!isFacingLeft)
@@ -105,7 +103,6 @@ public class Enemy1 : MonoBehaviour
             if (curMoveTime < 0f)
             {
                 curState = Estate.Eidle;
-                myRb.velocity = new Vector2(0, myRb.velocity.y);
 
                 //moves the ai the other way next time
                 isFacingLeft = true;
