@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class AISkele_01 : AIBase
 {
-    public float maxMoveTime;
-    public float curMoveTime;
-    public float maxIdleTime;
-    public float curIdleTime;
+    //vars
+    public float maxMoveTime = 0f;
+    public float curMoveTime = 0f;
+    public float maxIdleTime = 0f;
+    public float curIdleTime = 0f;
     public bool isFacingLeft = false;
 
-    //my components
+    //test for ai attacking
+    public Rect aggroBox;
+    public float aggroDist;
+    public Vector2 aggroDir;
+    public LayerMask mask;
+
+    //comps
     private Rigidbody2D myRb;
 
     // Use this for initialization
@@ -87,6 +94,40 @@ public class AISkele_01 : AIBase
     }
     protected override void UpdateAttack()
     {
+        //Nothign
+    }
 
+    //Overriding the virtual function
+    protected override void FindPlayer()
+    {
+        base.FindPlayer();
+
+        //Create box cast
+        RaycastHit2D hit = Physics2D.BoxCast(
+            (Vector2)this.transform.position + aggroBox.center,
+            aggroBox.size,
+            this.transform.eulerAngles.z,
+            aggroDir,
+            aggroDist,
+            mask);
+
+        //Check for hits
+        if (hit.collider)
+        {
+            Debug.Log("hit");
+        }
+    }
+
+    //Draw boxcast
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center, this.transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector2.zero, aggroBox.size);
+        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center + (aggroDir.normalized * aggroDist), this.transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector2.zero, aggroBox.size);
+        Gizmos.color = Color.cyan;
+        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center, Quaternion.identity, Vector3.one);
+        Gizmos.DrawLine(Vector2.zero, aggroDir.normalized * aggroDist);
     }
 }
