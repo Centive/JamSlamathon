@@ -2,20 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy1 : MonoBehaviour
+public class AISkele_01 : AIBase
 {
-    public enum Estate
-    {
-        Eidle,
-        Emove,
-        Eattack
-    }
-
-    public Estate curState = Estate.Eidle;
-
-    //my vars
-    public float maxSpeed;
-    public float curSpeed;
     public float maxMoveTime;
     public float curMoveTime;
     public float maxIdleTime;
@@ -37,36 +25,14 @@ public class Enemy1 : MonoBehaviour
         myRb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        switch (curState)
-        {
-            case Estate.Eidle:
-                {
-                    UpdateIdle();
-                    break;
-                }
-            case Estate.Emove:
-                {
-                    UpdateMove();
-                    break;
-                }
-            case Estate.Eattack:
-                {
-                    UpdateAttack();
-                    break;
-                }
-        }
-    }
-
     //Update states
-    void UpdateIdle()
+    protected override void UpdateIdle()
     {
         //Find player
         FindPlayer();
 
         myRb.velocity = new Vector2(0, myRb.velocity.y);
+
         //Idle time
         curIdleTime -= Time.deltaTime;
         if (curIdleTime < 0f)
@@ -75,13 +41,17 @@ public class Enemy1 : MonoBehaviour
             curIdleTime = maxIdleTime;
         }
     }
-    void UpdateMove()
+    protected override void UpdateMove()
     {
-        if(isFacingLeft)
+        //Find player
+        FindPlayer();
+
+        //Move ai
+        if (isFacingLeft)
         {
             //move timer
             curMoveTime -= Time.deltaTime;
-            if(curMoveTime < 0f)
+            if (curMoveTime < 0f)
             {
                 curState = Estate.Eidle;
 
@@ -95,8 +65,7 @@ public class Enemy1 : MonoBehaviour
                 myRb.velocity = new Vector2(-curSpeed, myRb.velocity.y);
             }
         }
-
-        if(!isFacingLeft)
+        if (!isFacingLeft)
         {
             //move timer
             curMoveTime -= Time.deltaTime;
@@ -116,13 +85,8 @@ public class Enemy1 : MonoBehaviour
 
         }
     }
-    void UpdateAttack()
+    protected override void UpdateAttack()
     {
 
-    }
-
-    void FindPlayer()
-    {
-        //nothing
     }
 }
