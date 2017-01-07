@@ -29,6 +29,7 @@ public abstract class AIBase : MonoBehaviour
     //Override these functions if an AI has a different logic
     protected virtual void CheckBehaviour()
     {
+        FindPlayer();
         switch (curState)
         {
             case Estate.Eidle:

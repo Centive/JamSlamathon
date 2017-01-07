@@ -114,7 +114,10 @@ public class AISkele_01 : AIBase
         //Check for hits
         if (hit.collider)
         {
-            Debug.Log("hit");
+
+            curMoveTime = maxMoveTime;
+            curIdleTime = maxIdleTime;
+            curState = Estate.Eidle;
         }
     }
 
