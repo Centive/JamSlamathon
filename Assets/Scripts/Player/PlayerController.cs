@@ -3,10 +3,13 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody2D myRb;
+    //vars
     public float mMaxSpeed;
     public float mCurSpeed;
 
+    //comps
+    private Rigidbody2D myRb;
+    
     //Debugging stuff
     public bool killPlayer = false;
 
