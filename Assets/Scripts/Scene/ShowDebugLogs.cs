@@ -33,27 +33,9 @@ public class ShowDebugLogs : MonoBehaviour
             myLog = "";
             curLogs = 0;
         }
-
-        if(lastLogString == logString)
-        {
-            numDuplicates++;
-        }
-        else
-        {
-            numDuplicates = 0;
-            myLog += "\n [" + type + "] : " + logString;
-            lastLogString = logString;
-            curLogs++;
-        }
-
-        //check no duplicates
-        //if(lastLogString != logString)
-        //{
-        //    //
-        //    myLog += "\n [" + type + "] : " + logString;
-        //    lastLogString = logString;
-        //    curLogs++;
-        //}
+        myLog += "\n [" + type + "] : " + logString;
+        lastLogString = logString;
+        curLogs++;
     }
 
 
