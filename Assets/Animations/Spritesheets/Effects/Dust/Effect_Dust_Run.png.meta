@@ -1,14 +1,16 @@
 fileFormatVersion: 2
-guid: 5ba03cc7acac2914a8da574ba50ba05f
-timeCreated: 1482529686
+guid: 942ce2daed449634ba29897677b572c7
+timeCreated: 1484297453
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Player_Idle_0
-    21300002: Player_Idle_1
-    21300004: Player_Idle_2
-    21300006: Player_Idle_3
-    21300008: Player_Idle_4
+    21300000: Effect_Dust_Run_0
+    21300002: Effect_Dust_Run_1
+    21300004: Effect_Dust_Run_2
+    21300006: Effect_Dust_Run_3
+    21300008: Effect_Dust_Run_4
+    21300010: Effect_Dust_Run_5
+    21300012: Effect_Dust_Run_6
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -58,65 +60,91 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Player_Idle_0
+      name: Effect_Dust_Run_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Player_Idle_1
+      name: Effect_Dust_Run_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Effect_Dust_Run_2
       rect:
         serializedVersion: 2
         x: 64
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Player_Idle_2
+      name: Effect_Dust_Run_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Effect_Dust_Run_4
       rect:
         serializedVersion: 2
         x: 128
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Player_Idle_3
+      name: Effect_Dust_Run_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Effect_Dust_Run_6
       rect:
         serializedVersion: 2
         x: 192
         y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: Player_Idle_4
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
