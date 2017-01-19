@@ -10,7 +10,7 @@ public class BulletNormal_01 : MonoBehaviour
     public Vector2 bulletDir = Vector2.right;
 
     //comps
-    public Rigidbody2D myRb;
+    private Rigidbody2D myRb;
 
     // Use this for initialization
     void Start()
