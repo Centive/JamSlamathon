@@ -60,7 +60,7 @@ public class Player_Movement : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             // Move player left
-            transform.Translate((Vector3.right) * PlayerStat.SPEED * Time.deltaTime);
+            transform.Translate((-Vector3.right) * PlayerStat.SPEED * Time.deltaTime);
 
             State.facingRight = false;
 
