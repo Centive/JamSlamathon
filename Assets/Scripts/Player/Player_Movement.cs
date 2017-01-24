@@ -8,27 +8,25 @@ public class Player_Movement : MonoBehaviour
         public static Animator animator;
         public static Rigidbody2D rigidBody2d;
     }
-
     struct PlayerStat
     {
         public const float SPEED = 4f;
         public const float JUMP = 200f;
     }
-
     struct Ground
     {
         public const float THICKNESS_GROUND = 0.2f;
     }
-    public Transform checkGround;
-    public LayerMask layerGround;
-
     struct State
     {
         public static bool facingRight = true;
         public static bool onGround = false;
     }
 
-	void Start ()
+    public Transform checkGround;
+    public LayerMask layerGround;
+
+    void Start ()
     {
         Component.animator = GetComponent<Animator>();
         Component.rigidBody2d = GetComponent<Rigidbody2D>();
@@ -56,32 +54,29 @@ public class Player_Movement : MonoBehaviour
             State.onGround = true;
         }
 
+        //Flip sprite
+        Vector3 currentScale = transform.localScale;
+        currentScale.x = (State.facingRight) ? 1f : -1f;
+        transform.localScale = currentScale;
+        //end flip sprite
+
         // Horizontal Movement (Running)
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetButton("MoveLeft"))
         {
             // Move player left
-            transform.Translate((-Vector3.right) * PlayerStat.SPEED * Time.deltaTime);
-
+            Component.rigidBody2d.velocity = new Vector2(-PlayerStat.SPEED, Component.rigidBody2d.velocity.y);
             State.facingRight = false;
-
-            Vector3 currentScale = transform.localScale;
-            currentScale.x = -1;
-            transform.localScale = currentScale;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetButton("MoveRight"))
         {
-            // Move player left
-            transform.Translate((Vector3.right) * PlayerStat.SPEED * Time.deltaTime);
-
+            // Move player right
+            Component.rigidBody2d.velocity = new Vector2(PlayerStat.SPEED, Component.rigidBody2d.velocity.y);
             State.facingRight = true;
-
-            Vector3 currentScale = transform.localScale;
-            currentScale.x = 1;
-            transform.localScale = currentScale;
         }
+
     }
 
-	void Update ()
+    void Update ()
     {
         // Vertical Movement (Jumping)
         if (Input.GetButtonDown("Jump") && State.onGround)
