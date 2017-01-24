@@ -11,7 +11,7 @@ public class Player_Movement : MonoBehaviour
     struct PlayerStat
     {
         public const float SPEED = 4f;
-        public const float JUMP = 200f;
+        public const float JUMP = 5f;
     }
     struct Ground
     {
@@ -42,7 +42,8 @@ public class Player_Movement : MonoBehaviour
         Component.animator.SetFloat("Velocity_Vertical", Component.rigidBody2d.velocity.y);
         Component.animator.SetBool("FacingRight", State.facingRight);
 
-        // CHECK IF GROUNDED //////////////////////////////////////////////////////////////////////
+        // CHECK IF GROUNDED /////////////////////////////////////////////////
+        /////////////////////
 
         // Retrieve properties for checking when on ground
         State.onGround = Physics2D.OverlapCircle(checkGround.position, Ground.THICKNESS_GROUND, layerGround);
@@ -81,6 +82,7 @@ public class Player_Movement : MonoBehaviour
         // Vertical Movement (Jumping)
         if (Input.GetButtonDown("Jump") && State.onGround)
         {
+            Component.rigidBody2d.velocity = new Vector2(Component.rigidBody2d.velocity.x, PlayerStat.JUMP);
             Component.rigidBody2d.AddForce(transform.up * PlayerStat.JUMP);
             State.onGround = false;
         }
