@@ -1,86 +1,166 @@
-﻿using UnityEngine;
+﻿//using UnityEngine;
+//using System.Collections;
+//using UnityEngine.SceneManagement;
+//public class GameManager : MonoBehaviour
+//{
+//    //singleton
+//    public static GameManager instance = null;
+//    public enum GameState
+//    {
+//        None,
+//        Intro,
+//        Profiles,
+//        Main_Menu,
+//        Pause_Menu,
+//        Options,
+//        Gameplay,
+//        Quick_Saving,
+//        Cutscene
+//    }
+//    public GameState curGameState { get; set; }
+//    void Awake()
+//    {
+//        //Check if there are any gamemanagers
+//        if (instance == null)
+//        {
+//            //if not then set it
+//            instance = this;
+//        }
+//        else if (instance != this)
+//        {
+//            //if there are then destroy this
+//            Destroy(gameObject);
+//        }
+//        //must exist through scenes
+//        DontDestroyOnLoad(gameObject);
+//    }
+//    //Puts the singleton back to null when exiting the app
+//    public void OnApplicationQuit()
+//    {
+//        instance = null;
+//    }
+//    public void UpdateGameState()
+//    {
+//        switch (curGameState)
+//        {
+//            case GameState.None:
+//                {
+//                    //Literally none
+//                    break;
+//                }
+//            case GameState.Intro:
+//                {
+//                    //Play intro or skip
+//                    break;
+//                }
+//            case GameState.Profiles:
+//                {
+//                    //Create new game or load a game file
+//                    break;
+//                }
+//            case GameState.Main_Menu:
+//                {
+//                    //Main menu selection screen
+//                    break;
+//                }
+//            case GameState.Pause_Menu:
+//                {
+//                    //Pause menu selection screen
+//                    break;
+//                }
+//            case GameState.Options:
+//                {
+//                    //Adjust audio, video, and controls
+//                    break;
+//                }
+//            case GameState.Gameplay:
+//                {
+//                    //Gameplay happens
+//                    break;
+//                }
+//            case GameState.Quick_Saving:
+//                {
+//                    //Game wait until saving is done
+//                    break;
+//                }
+//            case GameState.Cutscene:
+//                {
+//                    //No gameplay, lore is happening...
+//                    break;
+//                }
+//        }
+//    }
+//    void Update()
+//    {
+//    }
+//}
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    //DEBUGGING
-    public bool win = false;
+    private LevelEditor levelEditor = null;
+    public CameraBehavior camera = null;
+    public GameObject player;
 
-    //Gameobjs
-    public GameObject mPlayer_prefab;
-    private GameObject mPlayer;
+    public enum GameState
+    {
+        None,
+        Play,
+        Level_Edit,
+        Level_Gen
+    }
 
-    //Components
-    public Transform mCheckpoint;
+    public static GameState gameState = GameState.Level_Edit;
 
-    //Variables
-
-    /* (SELECTING CHECKPOINTS):
-     * Store a vector list of save positions so 
-     * the player can select which last save pos 
-     * they want to go back to.
-     * 
-     * Create a checkpoint manager script that
-     * pushes the transform.position 
-     */
-
-    /* (SAVING PROGRESS):
-     * if we are saving player's progress ie(increased health, or items)
-     * must save player progress in a notepad or xml (Data driven)
-     * so when we spawn the player we will read the information in the 
-     * notepad, and copy it to the newly spawned player.
-     */
-
-    // Use this for initialization
     void Start()
     {
-        //GAME START
-        //-Set Checkpoint to origin
-        //-Spawn player to save position (should be the first one) 
-            // -Set mPlayer obj to point at the active player in scene
-        mPlayer = Instantiate(mPlayer_prefab, mCheckpoint.position, Quaternion.identity) as GameObject;
+        levelEditor = GetComponent<LevelEditor>();
+        camera = Camera.main.GetComponent<CameraBehavior>();
+       
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        //1. Check if player is dead in the game
-            //Respawn to last save
-        if(!mPlayer)
-        {
-            //Spawn another player 
-                // -Set mPlayer obj to point at the active player in scene
-            mPlayer = Instantiate(mPlayer_prefab, mCheckpoint.position, Quaternion.identity) as GameObject;
-            Debug.Log("Loaded new :: " + mPlayer.name);
-        }
-
-        //2. Check if player has finished the game
-            // PLACE HOLDER :: Reload the level (for now)
-        if(win)
-        {
-            Debug.Log("Win condition is true, Reloading scene...");
-            //Reload the current scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-            // FINISH       :: Load to main menu
-            //...
-    }
-    
-    //Checks for win condition
-    bool IsWin()
-    {
-        //Check for win
-        bool isWin = false;
         
-        return isWin;
     }
 
-
-
-    //Debugging funcs
-    public void ToggleWin()
+    public void PlayTest()
     {
-        win = true;
+        if (!GameObject.FindGameObjectWithTag("Player"))
+        {
+            Instantiate(player, new Vector3(0, 1, 1), Quaternion.identity);
+            levelEditor.enabled = false;
+            levelEditor.gridEditor.ShowCells(false);
+            camera.cameraState = CameraBehavior.CameraState.FollowPlayer;
+            camera.gameObject.transform.position = camera.position;
+            camera.gameObject.transform.eulerAngles = camera.rotation;
+            Camera.main.orthographic = true;
+        }
+    }
+
+    public void EditLevel()
+    {
+        Camera.main.orthographic = false;
+        levelEditor.enabled = true;
+        levelEditor.gridEditor.ShowCells(true);
+        camera.cameraState = CameraBehavior.CameraState.ControlCamera;
+        camera.gameObject.transform.position = camera.position;
+        camera.gameObject.transform.eulerAngles = camera.rotation;
+
+        if (GameObject.FindGameObjectWithTag("Player"))
+        {
+            Destroy(GameObject.FindGameObjectWithTag("Player"));
+        }
+    }
+
+    void OnGUI()
+    {
+        //Play
+        if (GUI.Button(new Rect(0f, 80f, 80f, 20f), "Play")) { PlayTest(); }
+        //Play
+        if (GUI.Button(new Rect(0f, 100f, 80f, 20f), "Edit")) { EditLevel(); }
     }
 }

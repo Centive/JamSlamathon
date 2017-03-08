@@ -1,27 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletNormal_01 : MonoBehaviour
+public class BulletNormal_01 : ProjectileBase
 {
     //vars
-    public float bulletSpeed = 0f;
     public float angularVelocity = 0f;
-    public Vector2 bulletDir = Vector2.right;
-
+    
     //comps
     private Rigidbody2D myRb;
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         myRb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void FireBullet()
     {
-        myRb.velocity = bulletDir * bulletSpeed;
+        myRb.velocity = bulletDir * curSpeed;
         myRb.angularVelocity = angularVelocity;
+        
+        killTime -= Time.deltaTime;
+        if(killTime <= 0f)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

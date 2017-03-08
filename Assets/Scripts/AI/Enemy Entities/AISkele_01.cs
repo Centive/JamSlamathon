@@ -3,18 +3,73 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AISkele_01 : AIBase
+    , IDamageable<int>
+    , IKnockback<float>
+    , ISlow<float>
+    , IStun<float>
 {
+    //interfaces
+    public int health { get; set; }
+
+    public void ApplyDamage(int damageDone)
+    {
+        health -= damageDone;
+        if (health <= 0)
+        {
+            print("Player is dead");
+        }
+    }
+    public void ApplyKnockback(float amountOfForce)
+    {
+       myRb.AddForce(-(new Vector2(currentScale.x, -currentScale.y)) * amountOfForce);
+    }
+    public IEnumerator ApplySlow(float slowRate, float slowDuration)
+    {
+        float time = 0f;
+        while (slowDuration > time && Mathf.Abs(myRb.velocity.x) >= 0f)
+        {
+            time += Time.deltaTime;
+            float drag = -myRb.velocity.x * slowRate;
+            if(curState == Estate.Emove)
+                myRb.AddForce(transform.right * drag);
+            yield return null;
+        }
+    }
+    public IEnumerator ApplyStun(float stunDuration)
+    {
+        float time = 0f;
+        while (stunDuration > time)
+        {
+            time += Time.deltaTime;
+            curState = Estate.Enone;
+            yield return null;
+        }
+        curState = Estate.Eattack;
+    }
+    //
+
     //vars
     public float maxMoveTime = 0f;
     public float curMoveTime = 0f;
     public float maxIdleTime = 0f;
     public float curIdleTime = 0f;
-    public bool isFacingLeft = false;
+    public GameObject prefabProjectile;
+
+    //placeholders
+    public Sprite Sattacking;
+    public Sprite SidleOrMove;
+
+    //Firing bullets
+    public float fireRate = 0f;
+    public float nextFire = 0f;
+
 
     //test for ai attacking
-    public Rect aggroBox;
-    public float aggroDist;
-    public Vector2 aggroDir;
+    public float aggroDist = 0f;
+    public Rect aggroBox = Rect.zero;
+    public Vector2 aggroDir = Vector2.zero;
+    public Vector2 aggroOrigin = Vector2.zero;
+
     public LayerMask mask;
 
     //comps
@@ -30,13 +85,17 @@ public class AISkele_01 : AIBase
 
         //init comps
         myRb = GetComponent<Rigidbody2D>();
+        health = 50;
     }
 
     //Update states
     protected override void UpdateIdle()
     {
-        //Find player
-        FindPlayer();
+        //Check if the target is near
+        if (FindTarget())
+        {
+            curState = Estate.Eattack;
+        }
 
         myRb.velocity = new Vector2(0, myRb.velocity.y);
 
@@ -50,11 +109,16 @@ public class AISkele_01 : AIBase
     }
     protected override void UpdateMove()
     {
-        //Find player
-        FindPlayer();
+        //Check if the target is near
+        if (FindTarget())
+        {
+            curState = Estate.Eattack;
+        }
+
+        //Play move state...
 
         //Move ai
-        if (isFacingLeft)
+        if (!isFacingRight)
         {
             //move timer
             curMoveTime -= Time.deltaTime;
@@ -63,7 +127,7 @@ public class AISkele_01 : AIBase
                 curState = Estate.Eidle;
 
                 //moves the ai the other way next time
-                isFacingLeft = false;
+                isFacingRight = true;
                 curMoveTime = maxMoveTime;
             }
             else
@@ -72,7 +136,7 @@ public class AISkele_01 : AIBase
                 myRb.velocity = new Vector2(-curSpeed, myRb.velocity.y);
             }
         }
-        if (!isFacingLeft)
+        if (isFacingRight)
         {
             //move timer
             curMoveTime -= Time.deltaTime;
@@ -81,7 +145,7 @@ public class AISkele_01 : AIBase
                 curState = Estate.Eidle;
 
                 //moves the ai the other way next time
-                isFacingLeft = true;
+                isFacingRight = false;
                 curMoveTime = maxMoveTime;
             }
             else
@@ -94,43 +158,78 @@ public class AISkele_01 : AIBase
     }
     protected override void UpdateAttack()
     {
-        //Nothign
-    }
-
-    //Overriding the virtual function
-    protected override void FindPlayer()
-    {
-        base.FindPlayer();
-
-        //Create box cast
-        RaycastHit2D hit = Physics2D.BoxCast(
-            (Vector2)this.transform.position + aggroBox.center,
-            aggroBox.size,
-            this.transform.eulerAngles.z,
-            aggroDir,
-            aggroDist,
-            mask);
-
-        //Check for hits
-        if (hit.collider)
+        if (!GetComponent<SpriteRenderer>().isVisible)
         {
-
-            curMoveTime = maxMoveTime;
-            curIdleTime = maxIdleTime;
+            target = null;
             curState = Estate.Eidle;
         }
+        
+        //isFacingRight = () ? true : false;
+        
+        //Attack the player
+        if (Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
+
+            Vector3 bulletPos = new Vector3(0.302f, 0.333f);
+            if (!isFacingRight) { bulletPos.x = -bulletPos.x; } 
+
+            //Fire bullet
+            GameObject bullet = Instantiate(prefabProjectile, transform.position + bulletPos, Quaternion.identity) as GameObject;
+            if(target)
+                bullet.GetComponent<ProjectileBase>().bulletDir = (target.position - transform.position).normalized;
+        }
+    }
+    //Overriding the virtual function
+    protected override bool FindTarget()
+    {
+        //Change the boxcast's dir, and origin depending where
+        //the player is facing
+        if(isFacingRight)
+        {
+            aggroOrigin = (Vector2)transform.position + aggroBox.center;
+            aggroDir = Vector2.right;
+        }
+        else if(!isFacingRight)
+        {
+            aggroOrigin = (Vector2)transform.position - aggroBox.center;
+            aggroDir = Vector2.left;
+        }
+
+        RaycastHit2D hit = Physics2D.BoxCast(
+            aggroOrigin, 
+            aggroBox.size, transform.eulerAngles.z,
+            aggroDir, 
+            aggroDist, 
+            mask);
+        
+
+        //Check for hits
+        if (hit.collider != null)
+        {
+            //Check if it's the player
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                target = hit.transform;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     //Draw boxcast
     void OnDrawGizmos()
     {
+        //Draw cubes
         Gizmos.color = Color.green;
-        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center, this.transform.rotation, Vector3.one);
+        Gizmos.matrix = Matrix4x4.TRS(aggroOrigin, this.transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(Vector2.zero, aggroBox.size);
-        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center + (aggroDir.normalized * aggroDist), this.transform.rotation, Vector3.one);
+        Gizmos.matrix = Matrix4x4.TRS(aggroOrigin + (aggroDir.normalized * aggroDist), this.transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(Vector2.zero, aggroBox.size);
         Gizmos.color = Color.cyan;
-        Gizmos.matrix = Matrix4x4.TRS((Vector2)this.transform.position + aggroBox.center, Quaternion.identity, Vector3.one);
+        Gizmos.matrix = Matrix4x4.TRS(aggroOrigin, Quaternion.identity, Vector3.one);
         Gizmos.DrawLine(Vector2.zero, aggroDir.normalized * aggroDist);
+
     }
 }
